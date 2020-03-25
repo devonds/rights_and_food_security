@@ -12,57 +12,7 @@ library(RColorBrewer)
 
 # load spreadsheet of keyed literature exported to working directory as .csv from google docs, exclude bias assesment
 ## (marcela, I changed the file name below because that is how it is downlading from google drive for me --DS)
-fsv_data <- read_csv("HLPE Food Sov Keying - FSv.csv", skip = 1 ) %>%
-            select(1:27) 
-names(fsv_data) <- c(
-  "ID",
-  "key_access",
-  "key_complete",
-  "key_exclude",
-  "title",
-  "authors",
-  "year",
-  "pub",
-  "type_peer_grey",
-  "type_quant_qual",
-  "type_interv_observ",
-  "type_cross_case_long",
-  "study_date",
-  "study_location",
-  "study_dev",
-  "study_region",
-  "study_sample_size",
-  "measure_fsv",
-  "measure_fsn",
-  "summary_findings",
-  "notes",
-  "desc_intervention",
-  "impact_fsn",
-  "case_study",
-  "causality",
-  "conditionality",
-  "conditionality_desc" )
-
-head(fsv_data)
-str(fsv_data)
-
-# calculate some aditional variables related to keying/exclusion
-fsv_data <- mutate(fsv_data, 
-       excluded = !is.na(key_exclude),
-       graded = !is.na(impact_fsn))
-# do some cleaning
-fsv_data$key_exclude[fsv_data$key_exclude == "--"] <- NA
-fsv_data$conditionality[fsv_data$conditionality == "middle-range"] <- "Middle-range"
-fsv_data$causality[fsv_data$causality == "causal Mechanism"] <- "Causal Mechanism"
-fsv_data$causality[fsv_data$causality == "Desriptive"] <- "Desriptive"
-fsv_data$causality[fsv_data$causality == "Desriptive"] <- "Desriptive"
-fsv_data$causality[fsv_data$causality == "Desriptive"] <- "Descriptive"
-fsv_data$type_quant_qual[fsv_data$type_quant_qual == "Qualitative"] <- "qualitative"
-fsv_data$type_quant_qual[fsv_data$type_quant_qual == "qualitative"] <- "Qualitative"
-fsv_data$type_quant_qual[fsv_data$type_quant_qual == "quantitative"] <- "Quantitative"
-fsv_data$type_quant_qual[fsv_data$type_quant_qual == "quantitative"] <- "Quantitative"
-fsv_data$type_quant_qual[fsv_data$type_quant_qual == "quantitative and qualitative"] <- "Quantitative and qualitative"
-fsv_data$type_cross_case_long[fsv_data$type_cross_case_long == "case control"] <- "other"
+fsv_data <- read_csv("input_data/fsv_data.csv")
 
 # calculate some summaries of the keying process
 # how many accessed and evaluted after screening? 
@@ -91,8 +41,6 @@ fsv_data %>%
   group_by(type_peer_grey) %>%
   summarise(type = n())
 
-
-str(fsv_data)
 fsv_data %>%
   group_by(measure_fsv,type_peer_grey) %>%
   summarise(type = n())
@@ -101,8 +49,6 @@ fsv_data %>%
 fsv_data %>%
   group_by(measure_fsv,study_region ) %>%
   summarise(type = n())
-  
-  
 
 # pub date range
 min(fsv_data$year)
