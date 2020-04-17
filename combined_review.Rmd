@@ -1,0 +1,96 @@
+---
+title: "Rights-Based Approaches to Food Security and Nutrition"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+__ 
+
+```{r}
+# load required libaries
+
+library(tidyverse)
+library(RColorBrewer)
+library(gridExtra)
+
+# load data
+
+fsv_data <- read_csv("input_data/fsv_data.csv")
+r2f_data <- read_csv("input_data/r2f_data.csv")
+
+fsv_data <- filter(fsv_data, graded == TRUE & excluded == FALSE)
+r2f_data <- filter(r2f_data, graded == TRUE & excluded == FALSE)
+
+#  set color themes
+
+my.theme=theme(axis.title.y=element_text(size=rel(1.5),margin = margin(t = 10, r = 10, b = 20, l = 20)),
+               axis.title.x=element_text(size=rel(1.5),margin = margin(t = 10, r = 10, b = 10, l = 10)),
+               axis.text= element_text(size = rel(1.0)),
+               legend.key.size = unit(0.5, "cm"),
+               legend.text = element_text(size = rel(0.7)),
+               legend.background = element_rect(fill=NA, color="white"),
+             legend.key = element_rect(fill = "white", color = NA),
+             panel.border=element_rect(fill=NA,size=1,color="black"),
+               panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_rect(fill = "white"),
+               strip.text = element_text(size = rel(1.2)),
+               strip.background =  element_rect(fill = NA, colour = NA),
+               plot.margin = unit(c(1,1,1,1), "cm"))
+
+pr_color <- "deepskyblue4"
+colors_lit_type <- c("seagreen3", "slategray4", "deepskyblue3")
+```
+
+## Results
+
+```{r}
+pubyears <- 1992:2018
+
+f1_fsv_byyear <- ggplot(data = fsv_data, mapping = aes(x = year, fill = type_peer_grey)) +
+  geom_bar(color = "black", width = 1) +
+  scale_fill_manual(values = colors_lit_type) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(
+    x = "Publication year",
+    y = "Food sovereignty studies") +
+  scale_x_continuous("Publication year", labels = pubyears, breaks = pubyears) +
+  my.theme +
+  theme(legend.position = "bottom")
+
+
+f1_r2f_byyear <- ggplot(data = r2f_data, mapping = aes(x = year, fill = type_peer_grey)) +
+  geom_bar(color = "black", width = 1) +
+  scale_fill_manual(values = colors_lit_type, name = "Literature type") +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(
+    x = "Publication year",
+    y = "Right to Food studies") +
+  scale_x_continuous("Publication year", labels = pubyears, breaks = pubyears) +
+  my.theme
+  theme(legend.position = "none")
+
+
+#grid.arrange(f1_fsv_byyear, f1_r2f_byyear, ncol=2)
+
+#extract legend
+#https://github.com/hadley/ggplot2/wiki/Share-a-legend-between-two-ggplot2-graphs
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
+
+mylegend <- g_legend(f1_fsv_byyear)
+
+f1 <- grid.arrange(arrangeGrob(f1_fsv_byyear + theme(legend.position="none"),
+                         f1_r2f_byyear + theme(legend.position="none"),
+                         nrow=1),
+             mylegend, nrow=2,heights=c(10, 1))
+```
+

@@ -1,0 +1,243 @@
+---
+title: "Eploring Conditionality in the Rights-Based Approaches to FSN Dataset"
+output: html_notebook
+---
+
+```{r Load data and set colors, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(RColorBrewer)
+library(wesanderson)
+library(gridExtra)
+
+# load data
+
+fsv_data <- read_csv("input_data/fsv_data.csv")
+r2f_data <- read_csv("input_data/r2f_data.csv")
+
+fsv_data <- filter(fsv_data, graded == TRUE & excluded == FALSE)
+r2f_data <- filter(r2f_data, graded == TRUE & excluded == FALSE)
+
+# make sure our impacts, conditionality, and causality are properly ordered
+
+fsv_data <- fsv_data %>% 
+  mutate(impact_fsn = as.factor(impact_fsn)) %>%
+  #mutate(impact_fsn = fct_relevel(impact_fsn, c("-", "0", "+", "reverse+"))) %>%
+  mutate(impact_fsn = fct_relevel(impact_fsn, c("reverse+", "+", "0", "-"))) %>%
+  mutate(causality = as.factor(causality)) %>%
+  mutate(causality = fct_relevel(causality, c("Descriptive", "Causal Effect", "Causal Mechanism"))) %>%
+  mutate(conditionality = as.factor(conditionality)) %>%
+  mutate(conditionality = fct_relevel(conditionality, c("Narrow", "Middle-range", "Universal"))) 
+
+#  set color themes
+
+my.theme <-  theme(axis.title.y=element_text(size=rel(1.5),margin = margin(t = 10, r = 10, b = 20, l = 20)),
+               axis.title.x=element_text(size=rel(1.5),margin = margin(t = 10, r = 10, b = 10, l = 10)),
+               axis.text= element_text(size = rel(1.0)),
+               legend.key.size = unit(0.5, "cm"),
+               legend.text = element_text(size = rel(0.7)),
+               legend.background = element_rect(fill=NA, color="white"),
+               legend.key = element_rect(fill = "white", color = NA),
+               panel.border=element_rect(fill=NA,size=1,color="black"),
+               panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_rect(fill = "white"),
+               strip.text = element_text(size = rel(1.2)),
+               strip.background =  element_rect(fill = NA, colour = NA),
+               plot.margin = unit(c(1,1,1,1), "cm"))
+
+pr_color <- "deepskyblue4"
+sec_color <- "seagreen3"
+colors_lit_type <- c("seagreen3", "slategray4", "deepskyblue3")
+my_palette <- "Dark2"
+
+```
+In our dataset, we have keyed each study for "causality" and "conditionality", following Maglicca et al. 
+
+Causality is defined as the kind of causal relationship (between the rights-based approach and FSN) observed in the study, it is keyed as descriptive, causal effect, or causal mechanism
+
+Conditionality is defined as the expected range of conditions under which the authors expect the observed effect to be true, it is keyed as narrow, middle-range, or universal. 
+
+Here, I want to visualize how many papers fall into each group, and the relationsip between causality and conditionality.  I'll start with the food sovereignty literature. 
+
+## Food Sovereignty Literature: Causality and Conditionality
+
+These plots group studies by the reported conditionality or causality, and the colors reflect the studies' reported impact on FSN.  
+
+```{r}
+# plot causaltiy and conditionality
+
+fsv_data %>%
+  drop_na(causality) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = causality, fill = impact_fsn)) +
+  scale_fill_brewer(palette = my_palette, name = "Impact on FSN") +
+  labs(x = "Causality", y = "Nuber of Studies") +
+  #theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  my.theme
+
+fsv_data %>%
+  drop_na(conditionality) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = conditionality, fill = impact_fsn)) +
+  scale_fill_brewer(palette = my_palette, name = "Impact on FSN") +
+  labs(x = "Conditionality", y = "Nuber of Studies") +
+  #theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  my.theme
+```
+These plots group studies by the reported impact on FSN, and the colors reflect the studies' reported conditionality or causality.  
+```{r}
+# plot causaltiy and conditionality
+fsv_data %>%
+  drop_na(causality) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = impact_fsn, fill = causality)) +
+  scale_fill_brewer(palette = my_palette, name = "Causality") +
+  labs(x = "Impact", y = "Nuber of Studies") +
+  #theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  my.theme
+
+fsv_data %>%
+  drop_na(conditionality) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = impact_fsn, fill = conditionality)) +
+  scale_fill_brewer(palette = my_palette, name = "Conditionality") +
+  labs(x = "Impact", y = "Nuber of Studies") +
+  #theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  my.theme
+```
+
+```{r}
+# plot causaltiy BY conditionality
+
+fsv_data %>%
+  drop_na(causality) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = causality, fill = conditionality)) +
+  scale_fill_brewer(palette = my_palette, name = "Conditionality") +
+  labs(x = "Causality", y = "Nuber of Studies") +
+  #theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  my.theme
+
+fsv_data %>%
+  drop_na(conditionality) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = conditionality, fill = causality)) +
+  scale_fill_brewer(palette = my_palette, name = "Causality") +
+  labs(x = "Conditionality", y = "Nuber of Studies") +
+  #theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  my.theme
+```
+
+## Right to Food literature
+Here are the same plots for the right to food literature
+
+```{r}
+# plot causaltiy and conditionality
+my_palette <- "Set2"
+
+r2f_data %>%
+  drop_na(causality) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = causality, fill = impact_fsn)) +
+  scale_fill_brewer(palette = my_palette, name = "Impact on FSN") +
+  labs(x = "Causality", y = "Nuber of Studies") +
+  #theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  my.theme
+r2f_data %>%
+  drop_na(conditionality) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = conditionality, fill = impact_fsn)) +
+  scale_fill_brewer(palette = my_palette, name = "Impact on FSN") +
+  labs(x = "Conditionality", y = "Nuber of Studies") +
+  #theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  my.theme
+
+# plot impact by causaltiy and conditionality
+
+r2f_data %>%
+  drop_na(causality) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = impact_fsn, fill = causality)) +
+  scale_fill_brewer(palette = my_palette, name = "Causality") +
+  labs(x = "Impact", y = "Nuber of Studies") +
+  #theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  my.theme
+
+r2f_data %>%
+  drop_na(conditionality) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = impact_fsn, fill = conditionality)) +
+  scale_fill_brewer(palette = my_palette, name = "Conditionality") +
+  labs(x = "Impact", y = "Nuber of Studies") +
+  #theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  my.theme
+
+# plot causaltiy BY conditionality
+
+r2f_data %>%
+  drop_na(causality) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = causality, fill = conditionality)) +
+  scale_fill_brewer(palette = my_palette, name = "Conditionality") +
+  labs(x = "Causality", y = "Nuber of Studies") +
+  #theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  my.theme
+
+r2f_data %>%
+  drop_na(conditionality) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = conditionality, fill = causality)) +
+  scale_fill_brewer(palette = my_palette, name = "Causality") +
+  labs(x = "Conditionality", y = "Nuber of Studies") +
+  #theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  my.theme
+```
+
+I don't see a meaninigful difference in causality or conditionality between impacts or any correlation between causality and conditionality.  Is there a different way we could use that data on conditionality or causality? Should we drop it from our analysis? 
+
+
+From Barbara: 
+
+My understanding of why we wanted to do this - (inspired by Jahi Chappell, and we might ask his take on this) - was that when we are using a fair amount of case study type documentation, we should use both causality and conditionality as criteria to say how generally applicable the results are, beyond the boundaries of the case study.  I’m not sure there is a necessarily a relationship between the two.
+
+I am puzzled by your graphs though, as I thought the majority of our studies fell into the category of reverse positives, whereas you show the largest number as positives.
+
+```{r}
+fsv_data %>%
+  group_by(causality) %>%
+  summarise(type = n())
+
+r2f_data %>%
+  group_by(causality) %>%
+  summarise(type = n())
+
+fsv_data %>%
+  group_by(conditionality) %>%
+  summarise(type = n())
+
+r2f_data %>%
+  group_by(conditionality) %>%
+  summarise(type = n())
+
+fsv_data %>%
+  group_by(case_study) %>%
+  summarise(type = n())
+
+r2f_data %>%
+  group_by(case_study) %>%
+  summarise(type = n())
+```
+
+
+But nonetheless, my reading here would be that a significantly greater (though we need the statistics) number of food sovereignty studies were descriptive, thus more of the “case study” type than of conventional scientific papers identifying causal effects or mechanisms.  Not a surprise, but worth mentioning as we are making the argument that this type of knowledge base has been neglected, certainly in identifying global trends.
+

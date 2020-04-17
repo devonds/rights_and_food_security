@@ -41,23 +41,27 @@ names(fsv_data) <- c(
 # do some cleaning
 fsv_data$key_exclude[fsv_data$key_exclude == "--"] <- NA
 fsv_data$conditionality[fsv_data$conditionality == "middle-range"] <- "Middle-range"
+fsv_data$conditionality[fsv_data$conditionality == "Middle-Range"] <- "Middle-range"
 fsv_data$causality[fsv_data$causality == "causal Mechanism"] <- "Causal Mechanism"
 fsv_data$causality[fsv_data$causality == "Desriptive"] <- "Desriptive"
 fsv_data$causality[fsv_data$causality == "Desriptive"] <- "Desriptive"
 fsv_data$causality[fsv_data$causality == "Desriptive"] <- "Descriptive"
+fsv_data$causality[fsv_data$causality == "Casusal Effect"] <- "Causal Effect"
 fsv_data$type_quant_qual[fsv_data$type_quant_qual == "Qualitative"] <- "qualitative"
 fsv_data$type_quant_qual[fsv_data$type_quant_qual == "qualitative"] <- "Qualitative"
 fsv_data$type_quant_qual[fsv_data$type_quant_qual == "quantitative"] <- "Quantitative"
 fsv_data$type_quant_qual[fsv_data$type_quant_qual == "quantitative"] <- "Quantitative"
 fsv_data$type_quant_qual[fsv_data$type_quant_qual == "quantitative and qualitative"] <- "Quantitative and qualitative"
 fsv_data$type_cross_case_long[fsv_data$type_cross_case_long == "case control"] <- "other"
+fsv_data$study_region[fsv_data$study_region == "Worldwide"] <- "Multiple Regions"
+
 
 # calculate some aditional variables
 fsv_data <- mutate(fsv_data, 
                    excluded = !is.na(key_exclude),
                    graded = !is.na(impact_fsn))
 fsv_data <- separate(data = fsv_data, col = measure_fsv, into = c("gen_id", "gen_def"), sep = ": ", remove = FALSE) ###Edited MC
-fsv_data$impact_fsn <- factor(fsv_data$impact_fsn, c("-", "0", "+", "=+")) ###Edited MC
+fsv_data$impact_fsn <- factor(fsv_data$impact_fsn, levels = c("-", "0", "+", "reverse+")) 
 
 write_csv(fsv_data, "input_data/fsv_data.csv")
 
@@ -111,10 +115,9 @@ r2f_data$study_dev[r2f_data$study_dev == "Develped"] <- "Developed"
 r2f_data$study_dev[r2f_data$study_dev == "Gloobla"] <- "Developed"
 r2f_data$study_dev[r2f_data$study_dev == "Develping"] <- "Developing"
 r2f_data$study_dev[r2f_data$study_dev == "Develping"] <- "Developing"
-r2f_data$impact_fsn[r2f_data$impact_fsn == "reverse+"] <- "=+" ###Edited MC
 
 r2f_data <- separate(data = r2f_data, col = measure_r2f, into = c("gen_id", "gen_def"), sep = ". ", remove = FALSE) ###Edited MC
-r2f_data$impact_fsn <- factor(r2f_data$impact_fsn, c("-", "0", "+", "=+")) ###Edited MC
+r2f_data$impact_fsn <- factor(r2f_data$impact_fsn, c("-", "0", "+", "reverse+")) 
 
 # calculate some aditional variables related to keying/exclusion
 r2f_data <- mutate(r2f_data, 

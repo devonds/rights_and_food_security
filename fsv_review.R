@@ -56,9 +56,6 @@ max(fsv_data$year)
 
 # graphs
 #set color themes
-
-
-
 my.theme=theme(axis.title.y=element_text(size=rel(1.5),margin = margin(t = 10, r = 10, b = 20, l = 20)),
                axis.title.x=element_text(size=rel(1.5),margin = margin(t = 10, r = 10, b = 10, l = 10)),
                axis.text= element_text(size = rel(1.0)),
@@ -88,11 +85,10 @@ ggplot(data = fsv_data, mapping = aes(x = year, fill = type_peer_grey)) +
     y = "Food sovereignty studies") +
   scale_x_continuous("Publication year", labels = pubyears, breaks = pubyears) +
   my.theme
-ggsave("Year and number of screened studies.png", width = 17, height = 17, pointsize=1.5, units = "cm") 
+ggsave("figures/FSv_1_Year and number of screened studies.png", width = 17, height = 10, pointsize=1.5, units = "cm") 
 
 
 # keyed studies by region 
-## [took out color spec in geom_bar() to add colors for regions, because qualitatively different. dissagree? -- DS]
 ggplot(data = fsv_data, mapping = aes(x = study_region, fill = study_region, na.rm = TRUE)) +
   geom_bar() +
   coord_flip() +
@@ -102,9 +98,8 @@ ggplot(data = fsv_data, mapping = aes(x = study_region, fill = study_region, na.
     y = "Number of studies") +
   my.theme
     
-ggsave("Region and Number of screened studies.png", width = 17, height = 17, pointsize=1.5, units = "cm") 
+ggsave("Region and Number of screened studies.png", width = 17, height = 10, pointsize=1.5, units = "cm") 
 
-    
 
 # report developed / developing
 fsv_data %>%
@@ -126,7 +121,7 @@ ggplot(data = fsv_impact) +
   geom_bar(mapping = aes(x = impact, y = freq), stat="identity", color=pr_color, fill=pr_color) +
   labs(x = "Impact on FSN",
       y = "Number of studies")+my.theme
-ggsave("Impact on FSN and Number of screened studies.png", width = 17, height = 17, pointsize=1.5, units = "cm") 
+ggsave("Impact on FSN and Number of screened studies.png", width = 10, height = 5, pointsize=1.5, units = "cm") 
 
 # plot impact on FSN facited by region
 ggplot(data = fsv_data, mapping = aes(x = impact_fsn, fill = study_region)) + 
@@ -135,7 +130,7 @@ ggplot(data = fsv_data, mapping = aes(x = impact_fsn, fill = study_region)) +
   labs(x = "Impact on FSN",
        y = "Number of studies") +
     my.theme
-ggsave("Impact on FSN by Region.png", width = 17, height = 17, pointsize=1.5, units = "cm") 
+ggsave("figures/Impact on FSN by Region.png", width = 17, height = 10, pointsize=1.5, units = "cm") 
  
 # plot impact on FSN by Type of literature -Marcela
 fsv_impactTypeLit <- fsv_data %>%
@@ -149,7 +144,6 @@ ggplot(data = fsv_impactTypeLit) +
   scale_fill_manual(values=colors_lit_type, name = "Type of literature")+
   labs(x = "Impact on FSN",
       y = "Number of studies")+my.theme
-png(filename="Type of literature",res=300,pointsize=1.5)
 ggsave("barImpactbyTypeLit.png", width = 15, height = 10, pointsize=1.5, units = "cm") 
 
 # report impact on FSN
@@ -186,7 +180,7 @@ fsv_gen$action_short[fsv_gen$gen_id == "D"] <- "D. Production autonomy"
 fsv_gen$action_short[fsv_gen$gen_id == "E"] <- "E. Rights of communites"
 fsv_gen$action_short[fsv_gen$gen_id == "F"] <- "F. Gender equity"
 
-
+# Number of Studies by Food Sov Action Type, by Lit Type
 # ***horizontal w abreviated action type names**** 
 ggplot(data = fsv_gen) + 
   geom_bar(mapping = aes(x = reorder(action_short, desc(action_short)), y = freq, fill=lit_type), stat="identity") +
@@ -195,6 +189,8 @@ ggplot(data = fsv_gen) +
   coord_flip() +
   scale_fill_manual(values=colors_lit_type, name = "Type of literature") +
   my.theme
+ggsave("figures/FSv_x_Number of studies by lit type in each FSv action type.png", width= 16.5, height = 8.5, units = "cm")
+
 
 # OR plot number of studies by fsv action type, with legend to right
 ggplot(data = fsv_gen) + 
@@ -211,10 +207,6 @@ ggplot(data = fsv_gen) +
   labs( x = "Food sovereignty action",
        y = "Number of studies") + 
   my.theme
-
-# EXPORT DATA SET
-write_csv(fsv_data, path = "supplemental_data/fsv_data.csv")
-
 
 # plot impact by region (devon)
 ggplot(data = fsv_data) + 
@@ -246,13 +238,13 @@ fsv_data %>%
   drop_na(action_short) %>%
   ggplot() +
   geom_bar(mapping = aes(x = impact_fsn, fill = impact_fsn)) +
-  scale_fill_brewer(palette = "RdYlBu") +
+  scale_fill_brewer(palette = "Set2") +
   facet_wrap(~ action_short, nrow = 2) +
   theme(axis.text.x = element_text(angle = 90), legend.position = "none") +
   labs(x = "Impact of food sovereignty on FSN",
        y = "Number of studies") +
   my.theme
-ggsave("fsv impact facited by action type.png", height = 13, width = 27, pointsize = 1.5, units = "cm")
+ggsave("figures/fsv_x impact facited by action type.png", height = 13, width = 27, pointsize = 1.5, units = "cm")
 
        
 # plot conditionality by region (devon)
