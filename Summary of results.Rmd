@@ -1,0 +1,65 @@
+---
+title: "Summary of data from rights-based approaches review"
+output: html_notebook
+---
+This is a summary of results that I hope will be useful for writing and editing the article.  It can be automatically updated as we fix erros or tweak analyses in the code.  
+
+You can hide the code itself using the box in the upper right hand corner, and see just the comments and outputs. 
+
+```{r}
+# this has to run to do the rest
+
+# load required libaries
+
+library(tidyverse)
+library(RColorBrewer)
+library(gridExtra)
+
+# load data
+
+fsv_data <- read_csv("input_data/fsv_data.csv")
+r2f_data <- read_csv("input_data/r2f_data.csv")
+
+fsv_data <- filter(fsv_data, graded == TRUE & excluded == FALSE)
+r2f_data <- filter(r2f_data, graded == TRUE & excluded == FALSE)
+
+# set factor levels where needed
+
+fsv_data <- fsv_data %>% 
+  mutate(impact_fsn = as.factor(impact_fsn)) %>%
+  mutate(impact_fsn = fct_relevel(impact_fsn, c("-", "0", "+", "reverse+"))) %>%
+  mutate(causality = as.factor(causality)) %>%
+  mutate(causality = fct_relevel(causality, c("Descriptive", "Causal Effect", "Causal Mechanism"))) %>%
+  mutate(conditionality = as.factor(conditionality)) %>%
+  mutate(conditionality = fct_relevel(conditionality, c("Narrow", "Middle-range", "Universal"))) 
+
+
+```
+
+# Summary of results
+
+This notebook provides an updatable (if we fix any issues in the keyed data or data cleaning code) summary of the data for the paper.
+
+Here is a summary of the impacts (number of studies reporting -, 0, +, or reverse+)
+```{r}
+fsv_data %>%
+  group_by(impact_fsn) %>%
+  summarise(n())
+
+r2f_data %>%
+  group_by(impact_fsn) %>%
+  summarise(n())
+```
+
+And here are the impacts grouped by "action type" (aka generalization logic)
+```{r}
+fsv_data %>% 
+  group_by(gen_id, impact_fsn) %>% 
+  summarise(n())
+
+
+fsv_data %>% 
+  group_by(gen_id, impact_fsn) %>% 
+  summarise(n())
+```
+

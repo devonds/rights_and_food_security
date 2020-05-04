@@ -158,6 +158,14 @@ ggplot(data = fsv_gen) +
   scale_fill_manual(values=colors_lit_type, name = "Type of literature") +
   my.theme
 
+
+# report number of studies by action type and impact
+
+fsv_data %>% 
+  group_by(gen_id, impact_fsn) %>% 
+  summarise(n())
+
+
 '''
 Figure 4. Reported impact on FSN
 '''
@@ -185,5 +193,12 @@ grid.arrange(arrangeGrob(f4a + theme(legend.position="none"), f4b + theme(legend
              f4_legend, nrow=2,
              heights=c(10, 1))
 
-
-
+'''
+Other -- 
+table of results by action type
+'''
+# Food sovereignty
+> fsv_data %>% 
+  +   group_by(gen_id, impact_fsn) %>% 
+  +   summarise(n())
+# Right to Food
