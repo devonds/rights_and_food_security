@@ -42,7 +42,7 @@ sec_color <- "seagreen3"
 colors_lit_type <- c("seagreen3", "slategray4", "deepskyblue3")
 
 '''
-Figure 1. Publication year of studies on the impact of food sovereignty and the right to food on FSN. 
+Figure 2. Publication year of studies on the impact of food sovereignty and the right to food on FSN. 
 Included studies were published between January 1992 and September 2018.
 2018 is a partial year.
 '''
@@ -57,6 +57,7 @@ f1_fsv_byyear <- ggplot(data = fsv_data, mapping = aes(x = year, fill = type_pee
     x = "Publication year",
     y = "Food sovereignty studies") +
   scale_x_continuous("Publication year", labels = pubyears, breaks = pubyears) +
+  ylim(0, 37) +
   my.theme +
   theme(legend.position = "bottom")
 
@@ -69,6 +70,7 @@ f1_r2f_byyear <- ggplot(data = r2f_data, mapping = aes(x = year, fill = type_pee
     x = "Publication year",
     y = "Right to Food studies") +
   scale_x_continuous("Publication year", labels = pubyears, breaks = pubyears) +
+  ylim(0, 37) +
   my.theme
 theme(legend.position = "none")
 
@@ -87,7 +89,7 @@ grid.arrange(arrangeGrob(f1_fsv_byyear + theme(legend.position="none"), f1_r2f_b
                          heights=c(10, 1))
 
 '''
-Figure 2. Geographic regions of the studies
+Figure 3. Geographic regions of the studies
 '''
 # make a dataframe with the relivant data from both reviews
 
@@ -118,7 +120,7 @@ ggplot(data = byregion, mapping = aes(x = factor(study_region, level = rev(regio
   my.theme
 
 '''
-Figure 3. Studies by action type
+Figure 4. Studies by action type
 '''
 
 # seperates the "measure_fsv" variable into a letter and a description,
@@ -178,6 +180,7 @@ f4a <- ggplot(data = fsv_data, mapping = aes(x = impact_fsn, fill = type_peer_gr
   labs(x = "Impact",
        y = "Food sovereignty studies") +
   theme(legend.position = "bottom") +
+  ylim(0, 125) +
   my.theme
 
 f4b <- ggplot(data = r2f_data, mapping = aes(x = impact_fsn, fill = type_peer_grey)) +
@@ -185,6 +188,7 @@ f4b <- ggplot(data = r2f_data, mapping = aes(x = impact_fsn, fill = type_peer_gr
   scale_fill_manual( values = colors_lit_type, name = "Type of literature")+
   labs(x = "Impact",
        y = "Right to food studies") +
+  ylim(0, 125) +
   my.theme
 
 f4_legend <- extract_legend(f4a)
